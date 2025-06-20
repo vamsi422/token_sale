@@ -1,8 +1,8 @@
 #[starknet::contract]
 mod TokenSale{
     use starknet::storage::StoragePointerReadAccess;
-use starknet::storage::StoragePathEntry;
-use starknet::{ContractAddress,get_contract_address,get_caller_address,ClassHash};
+    use starknet::storage::StoragePathEntry;
+    use starknet::{ContractAddress,get_contract_address,get_caller_address,ClassHash};
     use starknet::storage::*;
     // use token_sale::interfaces::itoken_sale::ITokenSale::; //not safe way if we change name of package we may get error
 
@@ -36,6 +36,7 @@ use starknet::{ContractAddress,get_contract_address,get_caller_address,ClassHash
         self.owner.write(owner);
         self.accepted_payment_token.write(accepted_payment_token);
     }
+    #[abi(embed_v0)]
     impl TokenSaleImpl of ITokenSale<ContractState>{
         fn check_available_token(self:@ContractState,token_address:ContractAddress)->u256{
             let token=IERC20Dispatcher{contract_address:token_address};
@@ -85,6 +86,13 @@ use starknet::{ContractAddress,get_contract_address,get_caller_address,ClassHash
         fn upgrade(ref self:ContractState,new_class_hash:ClassHash){
             assert(get_caller_address()==self.owner.read(),'unauthorised caller');
             self.upgradeable.upgrade(new_class_hash);
+        }
+
+        fn owner(self:@ContractState)->ContractAddress{
+            self.owner.read()
+        }
+        fn accepted_payment_token(self: @ContractState) -> ContractAddress {
+            self.accepted_payment_token.read()
         }
 
     }

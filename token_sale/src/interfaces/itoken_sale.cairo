@@ -2,6 +2,9 @@ use starknet::{ContractAddress, ClassHash};
 
 #[starknet::interface]
 pub trait ITokenSale<TContractState> {
+    fn owner(self:@TContractState)->ContractAddress;
+    fn accepted_payment_token(self:@TContractState)-> ContractAddress;
+    
     fn check_available_token(self: @TContractState,token_address:ContractAddress) -> u256;
 
     fn deposit_token(
